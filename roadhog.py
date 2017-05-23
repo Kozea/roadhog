@@ -55,10 +55,9 @@ def update():
 
 @app.route('/redirect', methods=['GET'])
 def redirect_to():
-    redirect_url = request.args.get('redirect_uri')
-    code = request.args.get('code')
-    params = urlencode({'code': code})
-    return redirect(unquote(f'{redirect_url}?{params}'))
+    redirect_uri = request.args.get('redirect_uri')
+    params = urlencode(request.args)
+    return redirect(unquote(f'{redirect_uri}?{params}'))
 
 
 @app.route('/deploy', methods=['GET', 'POST'])
