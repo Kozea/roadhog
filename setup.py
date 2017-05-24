@@ -14,7 +14,6 @@ setup(
     include_package_data=True,
     install_requires=[
         'flask',
-        'requests',
     ],
     tests_require=tests_requirements,
     extras_require={'test': tests_requirements}
