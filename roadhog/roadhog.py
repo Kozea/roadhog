@@ -3,12 +3,19 @@ from hashlib import sha1
 from urllib.parse import unquote, urlencode
 
 from flask import Flask, redirect, request
+from sqlalchemy import create_engine
+
+from .model import Base
 
 
 class Roadhog(Flask):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.route('/redirect', methods=['GET', 'POST'])(redirect_to)
+        self.cli.command('init_db')(self.init_db)
+
+    def init_db(self):
+        Base.metadata.create_all(bind=create_engine(self.config['DB']))
 
 
 def redirect_to():
