@@ -24,7 +24,7 @@ class Commit(Base):
     project_id = Column(String, ForeignKey('project.id'))
     project = relationship('Project', backref='project')
 
-    jobs = relationship('Job', back_populates='commit')
+    jobs = relationship('Job', backref='job')
 
 
 class Job(Base):
@@ -40,4 +40,4 @@ class Job(Base):
     request_content = Column(String)
 
     commit_id = Column(String, ForeignKey('commit.id'))
-    commit = relationship('Commit', back_populates='jobs')
+    commit = relationship('Commit', backref='commit')
