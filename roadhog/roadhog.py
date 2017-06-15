@@ -1,10 +1,9 @@
 import hmac
-import pytz
 from datetime import datetime
 from hashlib import sha1
 from urllib.parse import unquote, urlencode
 
-from flask import Flask, g, jsonify, redirect, request
+from flask import Flask, g, redirect, request
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -70,7 +69,7 @@ def add_job(content, logs=None, request_headers=None):
     start_date = datetime.min if start is None else format_date(start)
     stop_date = datetime.min if stop is None else format_date(stop)
     headers = (request_headers if request_headers is None
-        else str(request_headers))
+               else str(request_headers))
     job = Job(
         id=content['build_id'],
         job_name=content['build_name'],
@@ -87,7 +86,7 @@ def add_job(content, logs=None, request_headers=None):
 
 
 def update_job(content):
-    job_id =  content['build_id']
+    job_id = content['build_id']
     save_log = g.session.query(Job).filter(Job.id == job_id).first().log
     g.session.query(Job).filter(Job.id == job_id).delete()
     g.session.commit()
@@ -115,4 +114,3 @@ def master(content, logs=None, request_headers=None):
         add_job(content, logs=logs, request_headers=request_headers)
     else:
         update_job(content)
-
