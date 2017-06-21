@@ -15,6 +15,7 @@ setup(
     install_requires=[
         'flask',
         'sqlalchemy',
+        'unrest',
     ],
     tests_require=tests_requirements,
     extras_require={'test': tests_requirements}
