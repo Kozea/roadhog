@@ -44,7 +44,6 @@ def hmac_match(content, hmac_send, secret):
     return 'sha1=' + compute_hmac == hmac_send
 
 
-
 def build_project(content):
     return {
         'id': content['project_id'],
