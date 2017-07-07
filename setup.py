@@ -3,6 +3,7 @@ from setuptools import find_packages, setup
 tests_requirements = [
     'pytest',
     'pytest-cov',
+    'pytest-factoryboy',
     'pytest-flake8',
     'pytest-isort',
 ]
