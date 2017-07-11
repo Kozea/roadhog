@@ -1,8 +1,11 @@
 import json
+from os.path import dirname, join
 
 import pytest
 from flask.testing import FlaskClient
 
+from alembic import command
+from alembic.config import Config
 from roadhog import roadhog
 
 
@@ -20,24 +23,35 @@ class HTTPClient(FlaskClient):
         return response.status_code, rv
 
 
-@pytest.yield_fixture(scope='function')
-def app():
-    app_roadhog = roadhog.Roadhog(__name__)
-    app_roadhog.config.from_envvar('TESTING_SETTINGS')
-    app_roadhog.initialize()
-    app_roadhog.test_client_class = HTTPClient
-    app_roadhog.init_db()
-    return app_roadhog
-
-
 @pytest.fixture
 def http(app):
     return app.test_client()
 
 
 @pytest.yield_fixture(scope='function')
-def db_session(app):
-    return app.create_session()
+def app():
+    app_roadhog = roadhog.Roadhog(__name__)
+    app_roadhog.config.from_envvar('TESTING_SETTINGS')
+    app_roadhog.initialize()
+    app_roadhog.test_client_class = HTTPClient
+    return app_roadhog
+
+
+@pytest.yield_fixture(scope='function')
+def db_session(app, alembic_config):
+    session = app.create_session()
+    yield session
+
+
+@pytest.yield_fixture(scope='function')
+def alembic_config(app):
+    ini_location = join(dirname(__file__), '..', '..', 'alembic.ini')
+    sqlalchemy_url = app.config['DB']
+    config = Config(ini_location)
+    config.set_main_option('sqlalchemy.url', sqlalchemy_url)
+    command.upgrade(config, 'head')
+    yield config
+    command.downgrade(config, 'base')
 
 
 @pytest.fixture(scope='function')

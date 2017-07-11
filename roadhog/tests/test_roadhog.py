@@ -2,6 +2,8 @@ import datetime
 
 from roadhog import roadhog
 
+from ..model import Commit, Job, Project
+
 
 def test_hmac_match(app, json_content):
     assert roadhog.hmac_match('toto'.encode('utf-8'),
@@ -9,7 +11,7 @@ def test_hmac_match(app, json_content):
                               app.config['XHUB'])
 
 
-def test_api(http):
+def test_api(http, alembic_config):
     assert http.get('/api/project')[0] == 200
     assert http.get('/api/commit_')[0] == 200
     assert http.get('/api/job')[0] == 200
@@ -51,4 +53,14 @@ def test_build_job(json_content, json_headers):
         "{'Content-Type': 'application/json', 'X-Gitlab-Token': 'token'}",
         'start': datetime.datetime(2017, 7, 6, 13, 39, 16),
         'status': 'success',
-        'stop': datetime.datetime(2017, 7, 6, 13, 43, 56)}
+        'stop': datetime.datetime(2017, 7, 6, 13, 43, 56)
+    }
+
+
+def test_master(app, db_session, json_content, json_headers):
+    with app.test_request_context():
+        app.preprocess_request()
+        roadhog.master(json_content, json_headers)
+        assert db_session.query(Job).first() is not None
+        assert db_session.query(Commit).first() is not None
+        assert db_session.query(Project).first() is not None

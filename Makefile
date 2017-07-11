@@ -18,8 +18,8 @@ clean-install: clean
 	rm -fr *.egg-info
 
 lint:
-	$(PYTEST) --no-cov --flake8 -m flake8
-	$(PYTEST) --no-cov --isort -m isort
+	$(PYTEST) --no-cov --flake8 -m flake8 $(PROJECT_NAME) $(PROJECT_NAME)/tests
+	$(PYTEST) --no-cov --isort -m isort $(PROJECT_NAME) $(PROJECT_NAME)/tests
 
 check-python:
 	TESTING_SETTINGS=$(FLASK_TEST_CONFIG) $(PYTEST) -vv $(PROJECT_NAME)
