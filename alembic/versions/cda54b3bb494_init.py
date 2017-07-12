@@ -1,13 +1,13 @@
 """init
 
 Revision ID: cda54b3bb494
-Revises: 
+Revises:
 Create Date: 2017-07-11 14:40:02.424648
 
 """
-from alembic import op
 import sqlalchemy as sa
 
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = 'cda54b3bb494'

@@ -31,7 +31,7 @@ def http(app):
 @pytest.yield_fixture(scope='function')
 def app():
     app_roadhog = roadhog.Roadhog(__name__)
-    app_roadhog.config.from_envvar('TESTING_SETTINGS')
+    app_roadhog.config.from_pyfile('testing_settings.py')
     app_roadhog.initialize()
     app_roadhog.test_client_class = HTTPClient
     return app_roadhog
