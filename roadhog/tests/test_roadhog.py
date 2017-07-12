@@ -39,16 +39,16 @@ def test_build_job(json_content, json_headers):
         'commit_id': 9632758,
         'id': 21339678,
         'job_name': 'deploy_test',
-        'request_content':
-        "{'object_kind': 'build', 'ref': 'phoenix_2223', "
-        "'build_id': 21339678, 'build_name': 'deploy_test', "
-        "'build_status': 'success', 'build_started_at': "
-        "'2017-07-06 13:39:16 UTC', 'build_finished_at': "
-        "'2017-07-06 13:43:56 UTC', 'project_id': 1320772, "
-        "'commit': {'id': 9632758}, 'repository': {'name': "
-        "'hydra', 'description': 'Serpent-like water monster with "
-        "reptilian traits', 'homepage': "
-        "'https://gitlab.com/Kozea/hydra'}}",
+        'request_content': (
+            "{'object_kind': 'build', 'ref': 'phoenix_2223', "
+            "'build_id': 21339678, 'build_name': 'deploy_test', "
+            "'build_status': 'success', 'build_started_at': "
+            "'2017-07-06 13:39:16 UTC', 'build_finished_at': "
+            "'2017-07-06 13:43:56 UTC', 'project_id': 1320772, "
+            "'commit': {'id': 9632758}, 'repository': {'name': "
+            "'hydra', 'description': 'Serpent-like water monster with "
+            "reptilian traits', 'homepage': "
+            "'https://gitlab.com/Kozea/hydra'}}"),
         'request_headers':
         "{'Content-Type': 'application/json', 'X-Gitlab-Token': 'token'}",
         'start': datetime.datetime(2017, 7, 6, 13, 39, 16),
