@@ -5,7 +5,7 @@ from roadhog import roadhog
 from ..model import Commit, Job, Project
 
 
-def test_hmac_match(app, json_content):
+def test_hmac_match(app):
     assert roadhog.hmac_match('toto'.encode('utf-8'),
                               'sha1=51c53ab8853ab958acf65ce09b8f68c65fac821c',
                               app.config['XHUB'])
