@@ -8,22 +8,18 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from unrest import UnRest
 
-from .model import Base, Commit, Job, Project
+from .model import Commit, Job, Project
 
 
 class Roadhog(Flask):
     def create_session(self):
         return sessionmaker(bind=create_engine(self.config['DB']))()
 
-    def init_db(self):
-        Base.metadata.create_all(bind=create_engine(self.config['DB']))
-
     def before(self):
         g.session = self.create_session()
 
     def initialize(self):
         self.route('/redirect', methods=['GET', 'POST'])(redirect_to)
-        self.cli.command('init_db')(self.init_db)
         self.before_request(self.before)
         rest = UnRest(self, self.create_session())
         rest(Project, methods=['GET'])
