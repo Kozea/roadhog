@@ -72,10 +72,16 @@ def test_add_log(app, db_session, json_content, json_headers):
             .first().log == 'some logs')
 
 
-def test_master(app, db_session, json_content, json_headers):
+def test_master(
+        app, db_session, json_content, json_content_update, json_headers):
     with app.test_request_context():
         app.preprocess_request()
         roadhog.master(json_content, json_headers)
         assert db_session.query(Job).first() is not None
         assert db_session.query(Commit).first() is not None
         assert db_session.query(Project).first() is not None
+        roadhog.master(json_content_update, json_headers)
+        assert (
+            db_session.query(Project)
+            .filter(Project.id == json_content_update['project_id'])
+            .first().name == 'change name')

@@ -77,6 +77,28 @@ def json_content():
 
 
 @pytest.fixture(scope='function')
+def json_content_update():
+    return {
+        'object_kind': 'build',
+        'ref': 'phoenix_2223',
+        'build_id': 21339678,
+        'build_name': 'deploy_test',
+        'build_status': 'success',
+        'build_started_at': '2017-07-06 13:39:16 UTC',
+        'build_finished_at': '2017-07-06 13:43:56 UTC',
+        'project_id': 1320772,
+        'commit': {
+            'id': 9632758,
+        },
+        'repository': {
+            'name': 'change name',
+            'description': 'Serpent-like water monster with reptilian traits',
+            'homepage': 'https://gitlab.com/Kozea/hydra',
+        }
+    }
+
+
+@pytest.fixture(scope='function')
 def json_headers():
     return {
         'Content-Type': 'application/json',
