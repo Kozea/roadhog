@@ -17,13 +17,13 @@ class Project(Base):
 class Commit(Base):
     __tablename__ = 'commit_'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(String, primary_key=True)
     branch = Column(String, nullable=False)
+    pipeline_id = Column(Integer, nullable=False)
+    message = Column(String, nullable=False)
 
     project_id = Column(String, ForeignKey('project.id'))
     project = relationship('Project', backref='project')
-
-    jobs = relationship('Job', backref='job')
 
 
 class Job(Base):
