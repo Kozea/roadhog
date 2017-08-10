@@ -51,8 +51,11 @@ def build_project(content):
 
 def build_commit(content):
     return {
-        'id': content['commit']['id'],
+        'id': content['commit']['sha'],
         'branch': content['ref'],
+        'pipeline_id': content['commit']['id'],
+        'message': content['commit']['message'],
+        'author': content['commit']['author_name'],
         'project_id': content['project_id']
     }
 

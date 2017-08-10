@@ -32,8 +32,11 @@ def test_build_project(json_content):
 
 def test_build_commit(json_content):
     assert roadhog.build_commit(json_content) == {
-        'id': 9632758,
+        'pipeline_id': 9632758,
         'branch': 'phoenix_2223',
+        'id': '1234abcd',
+        'message': 'message',
+        'author': 'Juste LeBlanc',
         'project_id': 1320772
     }
 
@@ -49,7 +52,9 @@ def test_build_job(json_content, json_headers):
             "'build_status': 'success', 'build_started_at': "
             "'2017-07-06 13:39:16 UTC', 'build_finished_at': "
             "'2017-07-06 13:43:56 UTC', 'project_id': 1320772, "
-            "'commit': {'id': 9632758}, 'repository': {'name': "
+            "'commit': {'id': 9632758, 'sha': '1234abcd', "
+            "'message': 'message', 'author_name': 'Juste LeBlanc'}, "
+            "'repository': {'name': "
             "'hydra', 'description': 'Serpent-like water monster with "
             "reptilian traits', 'homepage': "
             "'https://gitlab.com/Kozea/hydra'}}"),

@@ -21,6 +21,7 @@ class Commit(Base):
     branch = Column(String, nullable=False)
     pipeline_id = Column(Integer, nullable=False)
     message = Column(String, nullable=False)
+    author = Column(String, nullable=False)
 
     project_id = Column(String, ForeignKey('project.id'))
     project = relationship('Project', backref='project')

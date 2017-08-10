@@ -67,6 +67,9 @@ def json_content():
         'project_id': 1320772,
         'commit': {
             'id': 9632758,
+            'sha': '1234abcd',
+            'message': 'message',
+            'author_name': 'Juste LeBlanc',
         },
         'repository': {
             'name': 'hydra',
@@ -89,6 +92,9 @@ def json_content_update():
         'project_id': 1320772,
         'commit': {
             'id': 9632758,
+            'sha': '1234abcd',
+            'message': 'message',
+            'author_name': 'Juste LeBlanc',
         },
         'repository': {
             'name': 'change name',

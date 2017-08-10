@@ -20,15 +20,18 @@ def upgrade():
     op.create_table(
         'project',
         sa.Column('id', sa.Integer()),
-        sa.Column('name', sa.String()),
-        sa.Column('url', sa.String()),
+        sa.Column('name', sa.String(), nullable=False),
+        sa.Column('url', sa.String(), nullable=False),
         sa.Column('description', sa.String()),
         sa.PrimaryKeyConstraint('id'))
 
     op.create_table(
         'commit_',
-        sa.Column('id', sa.Integer()),
-        sa.Column('branch', sa.String()),
+        sa.Column('id', sa.String()),
+        sa.Column('branch', sa.String(), nullable=False),
+        sa.Column('pipeline_id', sa.Integer(), nullable=False),
+        sa.Column('message', sa.String(), nullable=False),
+        sa.Column('author', sa.String(), nullable=False),
         sa.Column('project_id', sa.Integer()),
         sa.ForeignKeyConstraint(['project_id'], ['project.id'], ),
         sa.PrimaryKeyConstraint('id'))
@@ -36,10 +39,10 @@ def upgrade():
     op.create_table(
         'job',
         sa.Column('id', sa.Integer()),
-        sa.Column('job_name', sa.String()),
+        sa.Column('job_name', sa.String(), nullable=False),
         sa.Column('start', sa.Date()),
         sa.Column('stop', sa.Date()),
-        sa.Column('status', sa.String()),
+        sa.Column('status', sa.String(), nullable=False),
         sa.Column('log', sa.String()),
         sa.Column('request_headers', sa.String()),
         sa.Column('request_content', sa.String()),
