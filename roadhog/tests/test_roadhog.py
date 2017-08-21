@@ -43,7 +43,7 @@ def test_build_commit(json_content):
 
 def test_build_job(json_content, json_headers):
     assert roadhog.build_job(json_content, json_headers) == {
-        'commit_id': 9632758,
+        'commit_id': '1234abcd',
         'id': 21339678,
         'job_name': 'deploy_test',
         'request_content': (

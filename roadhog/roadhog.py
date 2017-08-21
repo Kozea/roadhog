@@ -73,7 +73,7 @@ def build_job(content, request_headers):
         'status': content['build_status'],
         'request_headers': str(request_headers),
         'request_content': str(content),
-        'commit_id': content['commit']['id']
+        'commit_id': content['commit']['sha']
     }
 
 
