@@ -23,8 +23,14 @@ class Roadhog(Flask):
         self.before_request(self.before)
         rest = UnRest(self, self.create_session())
         rest(Project, methods=['GET'])
-        rest(Commit, methods=['GET'])
-        rest(Job, methods=['GET'])
+        rest(Commit, methods=['GET'],
+             query=lambda q:
+             q.filter(Commit.project_id == request.args['project_id'])
+             if request.args else q)
+        rest(Job, methods=['GET'],
+             query=lambda q:
+             q.filter(Job.commit_id == request.args['commit_id'])
+             if request.args else q)
 
 
 def redirect_to():
