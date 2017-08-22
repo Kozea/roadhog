@@ -84,9 +84,7 @@ def build_job(content, request_headers):
 
 
 def add_log(job_id, logs):
-    (g.session.query(Job)
-     .filter(Job.id == job_id)
-     .update({'log': logs.decode('utf-8')}))
+    g.session.query(Job).filter(Job.id == job_id).update({'log': logs})
     g.session.commit()
 
 
