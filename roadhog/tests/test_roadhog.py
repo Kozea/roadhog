@@ -70,7 +70,7 @@ def test_add_log(app, db_session, json_content, json_headers):
     with app.test_request_context():
         app.preprocess_request()
         roadhog.master(json_content, json_headers)
-        roadhog.add_log(json_content['build_id'], 'some logs')
+        roadhog.add_log(json_content['build_id'], b'some logs')
         assert (
             db_session.query(Job)
             .filter(Job.id == json_content['build_id'])
