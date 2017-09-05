@@ -83,8 +83,8 @@ def build_job(content, request_headers):
     }
 
 
-def add_log(job_id, logs):
-    g.session.query(Job).filter(Job.id == job_id).update({'log': logs})
+def add_data(type, type_id, data):
+    g.session.query(type).filter(type.id == type_id).update(data)
     g.session.commit()
 
 
