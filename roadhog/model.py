@@ -11,7 +11,7 @@ class Project(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     url = Column(String, nullable=False)
-    description = Column(String, nullable=False)
+    description = Column(String, nullable=True)
 
 
 class Commit(Base):
@@ -22,6 +22,7 @@ class Commit(Base):
     pipeline_id = Column(Integer, nullable=False)
     message = Column(String, nullable=False)
     author = Column(String, nullable=False)
+    url_test = Column(String, nullable=True)
 
     project_id = Column(String, ForeignKey('project.id'))
     project = relationship('Project', backref='project')
