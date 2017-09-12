@@ -62,7 +62,8 @@ def build_commit(content):
         'pipeline_id': content['commit']['id'],
         'message': content['commit']['message'],
         'author': content['commit']['author_name'],
-        'project_id': content['project_id']
+        'project_id': content['project_id'],
+        'status': content['build_status']
     }
 
 

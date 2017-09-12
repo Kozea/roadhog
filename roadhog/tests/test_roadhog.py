@@ -37,7 +37,8 @@ def test_build_commit(json_content):
         'id': '1234abcd',
         'message': 'message',
         'author': 'Juste LeBlanc',
-        'project_id': 1320772
+        'project_id': 1320772,
+        'status': 'success'
     }
 
 

@@ -23,6 +23,7 @@ class Commit(Base):
     message = Column(String, nullable=False)
     author = Column(String, nullable=False)
     url_test = Column(String, nullable=True)
+    status = Column(String, nullable=True)
 
     project_id = Column(String, ForeignKey('project.id'))
     project = relationship('Project', backref='project')
