@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
@@ -13,6 +13,11 @@ class Project(Base):
     url = Column(String, nullable=False)
     description = Column(String, nullable=True)
 
+    last_commit = relationship('Commit',
+                               primaryjoin='and_(Project.id==Commit.project_id)',
+                               uselist=False,
+                               backref='project')
+
 
 class Commit(Base):
     __tablename__ = 'commit_'
@@ -24,9 +29,10 @@ class Commit(Base):
     author = Column(String, nullable=False)
     url_test = Column(String, nullable=True)
     status = Column(String, nullable=True)
+    commit_date = Column(DateTime)
+    coverage = Column(Float, nullable=True)
 
     project_id = Column(String, ForeignKey('project.id'))
-    project = relationship('Project', backref='project')
 
 
 class Job(Base):
@@ -34,10 +40,10 @@ class Job(Base):
 
     id = Column(Integer, primary_key=True)
     job_name = Column(String, nullable=False)
-    start = Column(DateTime)
-    stop = Column(DateTime)
+    start = Column(DateTime, nullable=True)
+    stop = Column(DateTime, nullable=True)
     status = Column(String, nullable=False)
-    log = Column(String)
+    log = Column(String, nullable=True)
     request_headers = Column(String)
     request_content = Column(String)
 
