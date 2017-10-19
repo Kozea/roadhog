@@ -14,6 +14,7 @@ class Project(Base):
     description = Column(String, nullable=True)
 
     last_commit = relationship('Commit',
+                               order_by='asc(Commit.commit_date)',
                                primaryjoin='and_(Project.id==Commit.project_id)',
                                uselist=False,
                                backref='project')
