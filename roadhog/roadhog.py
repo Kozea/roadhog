@@ -5,7 +5,7 @@ from urllib.parse import unquote, urlencode
 
 from flask import Flask, g, redirect, request
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, joinedload
 from unrest import UnRest
 
 from .model import Commit, Job, Project
@@ -22,7 +22,11 @@ class Roadhog(Flask):
         self.route('/redirect', methods=['GET', 'POST'])(redirect_to)
         self.before_request(self.before)
         rest = UnRest(self, self.create_session())
-        rest(Project, methods=['GET'])
+#        rest(Project, methods=['GET'])
+        rest(Project, methods=['GET'],
+             query=lambda q: q.options(joinedload(Project.last_commit)),
+             relationships={
+                'last_commit': rest(Commit, only=['id'])})
         rest(Commit, methods=['GET'],
              query=lambda q:
              q.filter(Commit.project_id == request.args['project_id'])
