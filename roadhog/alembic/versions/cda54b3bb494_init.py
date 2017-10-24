@@ -29,7 +29,7 @@ def upgrade():
         'commit_',
         sa.Column('id', sa.String()),
         sa.Column('branch', sa.String(), nullable=False),
-        sa.Column('pipeline_id', sa.Integer(), nullable=False),
+        sa.Column('pipeline_id', sa.Integer()),
         sa.Column('message', sa.String(), nullable=False),
         sa.Column('author', sa.String(), nullable=False),
         sa.Column('project_id', sa.Integer()),

@@ -25,7 +25,7 @@ class Commit(Base):
 
     id = Column(String, primary_key=True)
     branch = Column(String, nullable=False)
-    pipeline_id = Column(Integer, nullable=False)
+    pipeline_id = Column(Integer)
     message = Column(String, nullable=False)
     author = Column(String, nullable=False)
     url_test = Column(String, nullable=True)
