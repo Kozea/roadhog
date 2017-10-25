@@ -5,7 +5,8 @@ from urllib.parse import unquote, urlencode
 
 from flask import Flask, g, redirect, request
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, joinedload
+from sqlalchemy.orm import joinedload, sessionmaker
+
 from unrest import UnRest
 
 from .model import Commit, Job, Project
@@ -22,15 +23,20 @@ class Roadhog(Flask):
         self.route('/redirect', methods=['GET', 'POST'])(redirect_to)
         self.before_request(self.before)
         rest = UnRest(self, self.create_session())
-#        rest(Project, methods=['GET'])
         rest(Project, methods=['GET'],
              query=lambda q: q.options(joinedload(Project.last_commit)),
              relationships={
-                'last_commit': rest(Commit, only=['id'])})
+                'last_commit': rest(Commit, only=['id', 'commit_date'])})
         rest(Commit, methods=['GET'],
              query=lambda q:
              q.filter(Commit.project_id == request.args['project_id'])
              if request.args else q)
+        rest(Commit, methods=['GET'], name='branch',
+             only=['branch'], primary_keys=['branch'],
+             query=lambda q:
+             g.session.query(Commit.branch)
+             .filter(Commit.project_id == request.args['project_id'])
+             .distinct(Commit.branch))
         rest(Job, methods=['GET'],
              query=lambda q:
              q.filter(Job.commit_id == request.args['commit_id'])
@@ -59,7 +65,7 @@ def build_project(content):
     }
 
 
-def build_commit(content):
+def build_commit_from_pipeline(content):
     return {
         'id': content['commit']['sha'],
         'branch': content['ref'],
@@ -68,6 +74,21 @@ def build_commit(content):
         'author': content['commit']['author_name'],
         'project_id': content['project_id'],
         'status': content['build_status']
+    }
+
+
+def format_timestamp(timestamp):
+    pass
+
+
+def build_commit_from_push(content, **kwargs):
+    return {
+        'id': content['id'],
+        'branch': kwargs['branch'],
+        'message': content['message'],
+        'author': content['author']['name'],
+        'commit_date': format_timestamp(content['timestamp']),
+        'project_id': kwargs['project_id']
     }
 
 
@@ -101,7 +122,15 @@ def upsert(type, data):
     g.session.commit()
 
 
-def master(content, request_headers):
+def master(content, request_headers, type_event):
     upsert(Project, build_project(content))
-    upsert(Commit, build_commit(content))
-    upsert(Job, build_job(content, request_headers))
+    if type_event == 'Push Hook':
+        branch = content['ref'].split('/')[-1]
+        project_id = content['project_id']
+        for commit in content['commits']:
+            upsert(Commit,
+                   build_commit_from_push(
+                       commit, branch=branch, project_id=projetc_id))
+    else:
+        upsert(Commit, build_commit_from_pipeline(content))
+        upsert(Job, build_job(content, request_headers))
