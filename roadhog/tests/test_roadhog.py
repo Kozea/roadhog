@@ -41,7 +41,10 @@ def test_build_project_from_pipeline(json_content_pipeline_hook):
 
 
 def test_build_commit_from_push(json_content_push_hook):
-    assert roadhog.build_project(json_content_push_hook) == {
+    branch = json_content_push_hook['ref'].split('/')[-1]
+    project_id = json_content_push_hook['project_id']
+    assert roadhog.build_project(
+        json_content_push_hook['commits'][0], branch, project_id) == {
         'id': '1234abcd',
         'branch': 'phoenix_2223',
         'message': 'message',
@@ -116,3 +119,7 @@ def test_master(
             db_session.query(Project)
             .filter(Project.id == json_content_update['project_id'])
             .first().name == 'change name')
+        assert (
+            db.session.query(Commit)
+            .filter(Commit.project_id == json_content_update['project_id'])
+            .first().commit_date != '')
