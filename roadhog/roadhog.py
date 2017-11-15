@@ -8,6 +8,8 @@ from flask import Flask, g, redirect, request
 from sqlalchemy import create_engine
 from sqlalchemy.orm import joinedload, sessionmaker
 
+from sassutils.wsgi import SassMiddleware
+
 from unrest import UnRest
 
 from .model import Commit, Job, Project
@@ -21,6 +23,7 @@ class Roadhog(Flask):
         g.session = self.create_session()
 
     def initialize(self):
+        self.wsgi_app = SassMiddleware(self.wsgi_app, {'junkrat': ('sass', 'static/css', '/static/css') })
         self.route('/redirect', methods=['GET', 'POST'])(redirect_to)
         self.before_request(self.before)
         rest = UnRest(self, self.create_session())
