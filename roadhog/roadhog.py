@@ -1,5 +1,6 @@
 import hmac
-from datetime import datetime
+import datetime
+# from datetime import datetime
 from hashlib import sha1
 from urllib.parse import unquote, urlencode
 
@@ -26,15 +27,15 @@ class Roadhog(Flask):
         rest(Project, methods=['GET'],
              query=lambda q: q.options(joinedload(Project.last_commit)),
              relationships={
-                'last_commit': rest(Commit, only=['id', 'commit_date'])})
+                 'last_commit': rest(Commit, only=['id', 'commit_date'])})
         rest(Commit, methods=['GET'],
              query=lambda q:
-             q.filter(Commit.project_id == request.args['project_id'])
+             q.filter(Commit.project_id == request.args['project_id']).filter(Commit.branch == request.args['branch'])
              if request.args else q)
-        rest(Commit, methods=['GET'], name='branch',
-             only=['branch'], primary_keys=['branch'],
+        rest(Commit, methods=['GET'], name='branche',
+             only=['branch', 'project_id'], primary_keys=['branch'],
              query=lambda q:
-             g.session.query(Commit.branch)
+             g.session.query(Commit.branch, Commit.project_id)
              .filter(Commit.project_id == request.args['project_id'])
              .distinct(Commit.branch))
         rest(Job, methods=['GET'],
@@ -78,7 +79,9 @@ def build_commit_from_pipeline(content):
 
 
 def format_timestamp(timestamp):
-    pass
+    date = timestamp[:22] + timestamp[23:]
+    date = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S%z")
+    return date.astimezone(tz=datetime.timezone.utc)
 
 
 def build_commit_from_push(content, **kwargs):
@@ -93,7 +96,7 @@ def build_commit_from_push(content, **kwargs):
 
 
 def format_date(date):
-    return date and datetime.strptime(date, '%Y-%m-%d %H:%M:%S %Z')
+    return date and datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S %Z')
 
 
 def build_job(content, request_headers):
@@ -130,7 +133,7 @@ def master(content, request_headers, type_event):
         for commit in content['commits']:
             upsert(Commit,
                    build_commit_from_push(
-                       commit, branch=branch, project_id=projetc_id))
+                       commit, branch=branch, project_id=project_id))
     else:
         upsert(Commit, build_commit_from_pipeline(content))
         upsert(Job, build_job(content, request_headers))
