@@ -13,11 +13,12 @@ class Project(Base):
     url = Column(String, nullable=False)
     description = Column(String, nullable=True)
 
-    last_commit = relationship('Commit',
-                               order_by='asc(Commit.commit_date)',
-                               primaryjoin='and_(Project.id==Commit.project_id)',
-                               uselist=False,
-                               backref='project')
+    last_commit = relationship(
+        'Commit',
+        order_by='asc(Commit.commit_date)',
+        primaryjoin='and_(Project.id==Commit.project_id)',
+        uselist=False,
+        backref='project')
 
 
 class Commit(Base):
