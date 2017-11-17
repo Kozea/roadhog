@@ -16,7 +16,6 @@ class Project(Base):
     last_commit = relationship(
         'Commit',
         order_by='asc(Commit.commit_date)',
-        primaryjoin='and_(Project.id==Commit.project_id)',
         uselist=False,
         backref='project')
 
@@ -35,6 +34,12 @@ class Commit(Base):
     coverage = Column(Float, nullable=True)
 
     project_id = Column(String, ForeignKey('project.id'))
+
+    project_info = relationship('Project', backref='commits')
+
+    @property
+    def project_name(self):
+        return self.project_info.name
 
 
 class Job(Base):

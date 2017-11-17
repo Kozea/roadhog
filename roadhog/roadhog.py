@@ -1,6 +1,5 @@
 import hmac
 import datetime
-# from datetime import datetime
 from hashlib import sha1
 from urllib.parse import unquote, urlencode
 
@@ -23,24 +22,36 @@ class Roadhog(Flask):
         g.session = self.create_session()
 
     def initialize(self):
-        self.wsgi_app = SassMiddleware(self.wsgi_app, {'junkrat': ('sass', 'static/css', '/static/css') })
+        self.wsgi_app = SassMiddleware(
+            self.wsgi_app,
+            {self.name: ('sass', 'static/css', '/static/css')})
         self.route('/redirect', methods=['GET', 'POST'])(redirect_to)
         self.before_request(self.before)
+
         rest = UnRest(self, self.create_session())
+        project_info = {
+            'project_info': rest(Project, name='project_info', only=['name'])}
+        last_commit = {
+            'last_commit': rest(Commit, name='last_commit', only=['id', 'commit_date'])}
+
         rest(Project, methods=['GET'],
-             query=lambda q: q.options(joinedload(Project.last_commit)),
-             relationships={
-                 'last_commit': rest(Commit, only=['id', 'commit_date'])})
+             query=lambda q: q.options(joinedload('last_commit')),
+             relationships=last_commit)
         rest(Commit, methods=['GET'],
              query=lambda q:
-             q.filter(Commit.project_id == request.args['project_id']).filter(Commit.branch == request.args['branch'])
-             if request.args else q)
+                q.filter(Commit.project_id == request.args['project_id'])
+                .filter(Commit.branch == request.args['branch'])
+                .options(joinedload('project_info'))
+                if request.args else q,
+             relationships=project_info)
         rest(Commit, methods=['GET'], name='branche',
-             only=['branch', 'project_id'], primary_keys=['branch'],
+             only=['branch', 'project_id'], properties=['project_name'], primary_keys=['branch'],
              query=lambda q:
-             g.session.query(Commit.branch, Commit.project_id)
-             .filter(Commit.project_id == request.args['project_id'])
-             .distinct(Commit.branch))
+                g.session.query(Commit.branch, Commit.project_id, Project.name.label('project_name'))
+                .select_from(Commit).join(Project)
+                .filter(Commit.project_id == request.args['project_id'])
+                .distinct(Commit.branch)
+                if request.args else q)
         rest(Job, methods=['GET'],
              query=lambda q:
              q.filter(Job.commit_id == request.args['commit_id'])
