@@ -15,6 +15,7 @@ class Project(Base):
 
     last_commit = relationship(
         'Commit',
+        primaryjoin='and_(Project.id==Commit.project_id, Commit.branch=="master")',
         order_by='asc(Commit.commit_date)',
         uselist=False,
         backref='project')
@@ -41,6 +42,10 @@ class Commit(Base):
     def project_name(self):
         return self.project_info.name
 
+    @property
+    def project_url(self):
+        return self.project_info.url
+
 
 class Job(Base):
     __tablename__ = 'job'
@@ -55,3 +60,5 @@ class Job(Base):
     request_content = Column(String)
 
     commit_id = Column(String, ForeignKey('commit_.id'))
+
+    commit_info = relationship('Commit', backref='jobs')
