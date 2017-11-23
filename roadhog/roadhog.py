@@ -1,13 +1,12 @@
-import hmac
 import datetime
+import hmac
 from hashlib import sha1
 from urllib.parse import unquote, urlencode
 
 from flask import Flask, g, redirect, request
+from sassutils.wsgi import SassMiddleware
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import joinedload, sessionmaker
-
-from sassutils.wsgi import SassMiddleware
 
 from unrest import UnRest
 
@@ -37,49 +36,51 @@ class Roadhog(Flask):
             only=['name', 'url'])
         commit_info = rest(
             Commit, name='commit_info',
-            only=['id', 'commit_date', 'message', 'author', 'branch', 'project_info'],
+            only=['id', 'commit_date', 'message',
+                  'author', 'branch', 'project_info'],
             relationships={
                 'project_info': project_info})
-       
+
         rest(Project, methods=['GET'],
              query=lambda q: q.options(joinedload('last_commit')),
              relationships={
-                'last_commit': last_commit})
+                 'last_commit': last_commit})
 
         rest(Commit, methods=['GET'],
              query=lambda q:
-                q.filter(Commit.project_id == request.args['project_id'])
-                .filter(Commit.branch == request.args['branch'])
-                .options(joinedload('project_info'))
-                .order_by(Commit.commit_date)
-                if request.args else q,
+             q.filter(Commit.project_id == request.args['project_id'])
+             .filter(Commit.branch == request.args['branch'])
+             .options(joinedload('project_info'))
+             .order_by(Commit.commit_date)
+             if request.args else q,
              relationships={
-                'project_info': project_info})
+                 'project_info': project_info})
 
         rest(Commit, methods=['GET'], name='branche',
              only=['branch', 'project_id', 'commit_date',
                    'id', 'message', 'author', 'url_test', 'status'],
-             properties=['project_name', 'project_url'], primary_keys=['branch'],
+             properties=['project_name', 'project_url'],
+             primary_keys=['branch'],
              query=lambda q:
-                g.session.query(
-                    Commit.branch, Commit.project_id,
-                    Project.name.label('project_name'),
-                    Project.url.label('project_url'), Commit.commit_date,
-                    Commit.id, Commit.message, Commit.author, Commit.url_test,
-                    Commit.status)
-                .select_from(Commit).join(Project)
-                .filter(Commit.project_id == request.args['project_id'])
-                .group_by(Commit.branch)
-                .having(func.max(Commit.commit_date))
-                if request.args else q)
+             g.session.query(
+                 Commit.branch, Commit.project_id,
+                 Project.name.label('project_name'),
+                 Project.url.label('project_url'), Commit.commit_date,
+                 Commit.id, Commit.message, Commit.author, Commit.url_test,
+                 Commit.status)
+             .select_from(Commit).join(Project)
+             .filter(Commit.project_id == request.args['project_id'])
+             .group_by(Commit.branch)
+             .having(func.max(Commit.commit_date))
+             if request.args else q)
 
         rest(Job, methods=['GET'],
              query=lambda q:
-                q.filter(Job.commit_id == request.args['commit_id'])
-                .order_by(Job.stop.desc())
-                if request.args else q,
+             q.filter(Job.commit_id == request.args['commit_id'])
+             .order_by(Job.stop.desc())
+             if request.args else q,
              relationships={
-                'commit_info': commit_info})
+                 'commit_info': commit_info})
 
 
 def redirect_to():

@@ -15,7 +15,8 @@ class Project(Base):
 
     last_commit = relationship(
         'Commit',
-        primaryjoin='and_(Project.id==Commit.project_id, Commit.branch=="master")',
+        primaryjoin='and_(Project.id==Commit.project_id, '
+                    'Commit.branch=="master")',
         order_by='asc(Commit.commit_date)',
         uselist=False,
         backref='project')
