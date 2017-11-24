@@ -2,10 +2,10 @@ import json
 from os.path import dirname, join
 
 import pytest
-from flask.testing import FlaskClient
-
 from alembic import command
 from alembic.config import Config
+from flask.testing import FlaskClient
+
 from roadhog import roadhog
 
 
@@ -55,7 +55,52 @@ def alembic_config(app):
 
 
 @pytest.fixture(scope='function')
-def json_content():
+def json_content_push_hook():
+    return {
+        'object_kind': 'push',
+        'event_name': 'push',
+        'before': '1111aaaa',
+        'after': '2222bbbb',
+        'ref': 'refs/heads/phoenix_2223',
+        'checkout_sha': '2222bbbb',
+        'message': None,
+        'project_id': 1320772,
+        'project': {
+            'name': 'hydra',
+            'description': 'Serpent-like water monster with reptilian traits',
+            'web_url': 'https://gitlab.com/Kozea/hydra',
+        },
+        'commits': [
+            {
+                'id': '1234abcd',
+                'message': 'message',
+                'timestamp': '2017-10-10T17:55:08+02:00',
+                'url': 'https://gitlab.com/Kozea/hydra/commit/1324abcd',
+                'author': {
+                    'name': 'Juste LeBlanc',
+                },
+            },
+            {
+                'id': '5678efgh',
+                'message': 'other message',
+                'timestamp': '2017-10-11T14:27:47+02:00',
+                'url': 'https://gitlab.com/Kozea/hydra/commit/5678efgh',
+                'author': {
+                    'name': 'Juste LeBlanc',
+                },
+            }
+        ],
+        'total_commits_count': 2,
+        'repository': {
+            'name': 'hydra',
+            'description': 'Serpent-like water monster with reptilian traits',
+            'homepage': 'https://gitlab.com/Kozea/hydra',
+        }
+    }
+
+
+@pytest.fixture(scope='function')
+def json_content_pipeline_hook():
     return {
         'object_kind': 'build',
         'ref': 'phoenix_2223',
@@ -80,7 +125,7 @@ def json_content():
 
 
 @pytest.fixture(scope='function')
-def json_content_update():
+def json_content_update_pipeline_hook():
     return {
         'object_kind': 'build',
         'ref': 'phoenix_2223',
