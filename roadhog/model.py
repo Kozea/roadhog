@@ -17,7 +17,7 @@ class Project(Base):
         'Commit',
         primaryjoin='and_(Project.id==Commit.project_id, '
                     'Commit.branch=="master")',
-        order_by='asc(Commit.commit_date)',
+        order_by='desc(Commit.commit_date)',
         uselist=False,
         backref='project')
 
