@@ -55,7 +55,8 @@ class Roadhog(Flask):
              .order_by(Commit.commit_date)
              if request.args else q,
              relationships={
-                 'project_info': project_info})
+                 'project_info': project_info,
+                 'last_job': last_job})
 
         rest(Commit, methods=['GET'], name='branche',
              only=['branch', 'project_id', 'commit_date',
