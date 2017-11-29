@@ -40,7 +40,8 @@ class Roadhog(Flask):
                   'author', 'branch', 'project_info'],
             relationships={
                 'project_info': project_info})
-
+        last_job = rest(Job, name='last_job', only=['status'])
+    
         rest(Project, methods=['GET'],
              query=lambda q: q.options(joinedload('last_commit')),
              relationships={
@@ -58,8 +59,8 @@ class Roadhog(Flask):
 
         rest(Commit, methods=['GET'], name='branche',
              only=['branch', 'project_id', 'commit_date',
-                   'id', 'message', 'author', 'url_test', 'status'],
-             properties=['project_name', 'project_url'],
+                   'id', 'message', 'author', 'url_test'],
+             properties=['project_name', 'project_url', 'job_status'],
              primary_keys=['branch'],
              query=lambda q:
              g.session.query(
@@ -67,8 +68,8 @@ class Roadhog(Flask):
                  Project.name.label('project_name'),
                  Project.url.label('project_url'), Commit.commit_date,
                  Commit.id, Commit.message, Commit.author, Commit.url_test,
-                 Commit.status)
-             .select_from(Commit).join(Project)
+                 Job.status.label('job_status'))
+             .select_from(Commit).join(Project).join(Job)
              .filter(Commit.project_id == request.args['project_id'])
              .group_by(Commit.branch)
              .having(func.max(Commit.commit_date))
@@ -113,7 +114,6 @@ def build_commit_from_pipeline(content):
         'message': content['commit']['message'],
         'author': content['commit']['author_name'],
         'project_id': content['project_id'],
-        'status': content['build_status']
     }
 
 

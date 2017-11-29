@@ -31,13 +31,18 @@ class Commit(Base):
     message = Column(String, nullable=False)
     author = Column(String, nullable=False)
     url_test = Column(String, nullable=True)
-    status = Column(String, nullable=True)
     commit_date = Column(DateTime)
     coverage = Column(Float, nullable=True)
 
     project_id = Column(String, ForeignKey('project.id'))
 
     project_info = relationship('Project', backref='commits')
+
+    last_job = relationship(
+        'Job',
+        order_by='desc(Job.stop)',
+        uselist=False,
+        backref='commits_job')
 
     @property
     def project_name(self):
@@ -47,6 +52,9 @@ class Commit(Base):
     def project_url(self):
         return self.project_info.url
 
+    @property
+    def job_status(self):
+        return self.last_job.status
 
 class Job(Base):
     __tablename__ = 'job'
