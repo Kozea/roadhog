@@ -77,7 +77,7 @@ class Roadhog(Flask):
         rest(Job, methods=['GET'],
              query=lambda q:
              q.filter(Job.commit_id == request.args['commit_id'])
-             .order_by(Job.stop.desc())
+             .order_by(Job.start)
              if request.args else q,
              relationships={
                  'commit_info': commit_info})
