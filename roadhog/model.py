@@ -18,8 +18,7 @@ class Project(Base):
         primaryjoin='and_(Project.id==Commit.project_id, '
                     'Commit.branch=="master")',
         order_by='desc(Commit.commit_date)',
-        uselist=False,
-        backref='project')
+        uselist=False)
 
 
 class Commit(Base):
@@ -36,25 +35,13 @@ class Commit(Base):
 
     project_id = Column(String, ForeignKey('project.id'))
 
-    project_info = relationship('Project', backref='commits')
+    project = relationship('Project', backref='commits')
 
     last_job = relationship(
         'Job',
         order_by='desc(Job.stop)',
-        uselist=False,
-        backref='commits_job')
+        uselist=False)
 
-    @property
-    def project_name(self):
-        return self.project_info.name
-
-    @property
-    def project_url(self):
-        return self.project_info.url
-
-    @property
-    def job_status(self):
-        return self.last_job.status
 
 class Job(Base):
     __tablename__ = 'job'
@@ -70,4 +57,4 @@ class Job(Base):
 
     commit_id = Column(String, ForeignKey('commit_.id'))
 
-    commit_info = relationship('Commit', backref='jobs')
+    commit = relationship('Commit', backref='jobs')

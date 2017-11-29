@@ -28,53 +28,52 @@ class Roadhog(Flask):
         self.before_request(self.before)
 
         rest = UnRest(self, self.create_session())
+
         last_commit = rest(
             Commit, name='last_commit',
             only=['id', 'commit_date', 'url_test'])
-        project_info = rest(
-            Project, name='project_info',
-            only=['name', 'url'])
-        commit_info = rest(
-            Commit, name='commit_info',
-            only=['id', 'commit_date', 'message',
-                  'author', 'branch', 'project_info'],
+
+        project = rest(
+            Project, methods=['GET'],
+            query=lambda q: q.options(joinedload('last_commit')),
             relationships={
-                'project_info': project_info})
+                'last_commit': last_commit})
+
         last_job = rest(Job, name='last_job', only=['status'])
-    
-        rest(Project, methods=['GET'],
-             query=lambda q: q.options(joinedload('last_commit')),
-             relationships={
-                 'last_commit': last_commit})
 
         rest(Commit, methods=['GET'],
              query=lambda q:
              q.filter(Commit.project_id == request.args['project_id'])
              .filter(Commit.branch == request.args['branch'])
-             .options(joinedload('project_info'))
+             .options(joinedload('project'))
+             .options(joinedload('last_job'))
              .order_by(Commit.commit_date)
              if request.args else q,
              relationships={
-                 'project_info': project_info,
+                 'project': project,
                  'last_job': last_job})
 
-        rest(Commit, methods=['GET'], name='branche',
+        rest(Commit, methods=['GET'], name='branch',
              only=['branch', 'project_id', 'commit_date',
                    'id', 'message', 'author', 'url_test'],
-             properties=['project_name', 'project_url', 'job_status'],
              primary_keys=['branch'],
              query=lambda q:
-             g.session.query(
-                 Commit.branch, Commit.project_id,
-                 Project.name.label('project_name'),
-                 Project.url.label('project_url'), Commit.commit_date,
-                 Commit.id, Commit.message, Commit.author, Commit.url_test,
-                 Job.status.label('job_status'))
-             .select_from(Commit).join(Project).join(Job)
-             .filter(Commit.project_id == request.args['project_id'])
+             q.filter(Commit.project_id == request.args['project_id'])
+             .options(joinedload('project'))
+             .options(joinedload('last_job'))
              .group_by(Commit.branch)
              .having(func.max(Commit.commit_date))
-             if request.args else q)
+             if request.args else q,
+             relationships={
+                 'project': project,
+                 'last_job': last_job})
+
+        commit_info = rest(
+            Commit, name='commit_info',
+            only=['id', 'commit_date', 'message',
+                  'author', 'branch', 'project'],
+            relationships={
+                'project': project})
 
         rest(Job, methods=['GET'],
              query=lambda q:
@@ -82,7 +81,7 @@ class Roadhog(Flask):
              .order_by(Job.start)
              if request.args else q,
              relationships={
-                 'commit_info': commit_info})
+                 'commit': commit_info})
 
 
 def redirect_to():

@@ -15,7 +15,7 @@ def test_api(http, alembic_config):
     assert http.get('/api/project')[0] == 200
     assert http.get('/api/commit_')[0] == 200
     assert http.get('/api/job')[0] == 200
-    assert http.get('/api/branche')[0] == 200
+    assert http.get('/api/branch')[0] == 200
 
 
 def test_redirect_to(http):
@@ -63,8 +63,7 @@ def test_build_commit_from_pipeline(json_content_pipeline_hook):
         'id': '1234abcd',
         'message': 'message',
         'author': 'Juste LeBlanc',
-        'project_id': 1320772,
-        'status': 'success'
+        'project_id': 1320772
     }
 
 
