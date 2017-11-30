@@ -39,7 +39,7 @@ class Commit(Base):
 
     last_job = relationship(
         'Job',
-        order_by='desc(Job.stop)',
+        order_by='desc(Job.start)',
         uselist=False)
 
 
