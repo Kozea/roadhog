@@ -35,7 +35,9 @@ class Roadhog(Flask):
 
         project = rest(
             Project, methods=['GET'],
-            query=lambda q: q.options(joinedload('last_commit')),
+            query=lambda q:
+            q.options(joinedload('last_commit'))
+            .order_by(Project.name.desc()),
             relationships={
                 'last_commit': last_commit})
 

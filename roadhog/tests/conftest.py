@@ -11,7 +11,6 @@ from roadhog import roadhog
 
 class HTTPClient(FlaskClient):
     def open(self, *args, **kwargs):
-        json_data = kwargs.pop('json', '')
         response = super(HTTPClient, self).open(*args, **kwargs)
         if response.content_type == 'application/json':
             rv = json.loads(response.data.decode('utf-8'))
