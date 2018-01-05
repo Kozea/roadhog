@@ -3,6 +3,7 @@ import hmac
 from hashlib import sha1
 from urllib.parse import unquote, urlencode
 
+import requests
 from flask import Flask, g, redirect, request
 from sassutils.wsgi import SassMiddleware
 from sqlalchemy import create_engine, func
@@ -156,6 +157,17 @@ def build_job(content, request_headers):
 def add_data(type, type_id, data):
     g.session.query(type).filter(type.id == type_id).update(data)
     g.session.commit()
+
+
+def add_gitlab_log(content, uri, token):
+    project_id = content['project_id']
+    job_id = content['build_id']
+    if not g.session.query(Job).filter(Job.id == job_id).first():
+        req = requests.get(
+            f'{uri}projects/{project_id}/jobs/{job_id}/trace',
+            headers={'PRIVATE_TOKEN': f'{token}'})
+        add_data(Job, job_id, {'log': req.get_data()})
+        g.session.commit()
 
 
 def upsert(type, data):
