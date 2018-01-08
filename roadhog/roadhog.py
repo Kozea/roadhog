@@ -169,7 +169,7 @@ def add_gitlab_log(content, uri, token):
             req = requests.get(
                 f'{uri}projects/{project_id}/jobs/{job_id}/trace',
                 headers={'PRIVATE-TOKEN': f'{token}'})
-            add_data(Job, job_id, {'log': req.get_data()})
+            add_data(Job, job_id, {'log': req.text})
             g.session.commit()
 
 
