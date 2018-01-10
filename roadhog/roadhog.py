@@ -160,17 +160,20 @@ def add_data(type, type_id, data):
 
 
 def add_gitlab_log(content, uri, token):
-    project_id = content['project_id']
-    job_id = content['build_id']
-    job_status = content['build_status']
-    end_status = ['success', 'canceled', 'failed']
-    if not g.session.query(Job.log).filter(Job.id == job_id).first()[0]:
-        if job_status in end_status:
-            req = requests.get(
-                f'{uri}projects/{project_id}/jobs/{job_id}/trace',
-                headers={'PRIVATE-TOKEN': f'{token}'})
-            add_data(Job, job_id, {'log': req.text})
-            g.session.commit()
+    job_name = content.get('build_name', '')
+    deploy_jobs = ['deploy_test', 'deploy_prod']
+    if job_name not in deploy_jobs:
+        project_id = content['project_id']
+        job_id = content['build_id']
+        job_status = content['build_status']
+        end_status = ['success', 'canceled', 'failed']
+        if not g.session.query(Job.log).filter(Job.id == job_id).first()[0]:
+            if job_status in end_status:
+                req = requests.get(
+                    f'{uri}projects/{project_id}/jobs/{job_id}/trace',
+                    headers={'PRIVATE-TOKEN': f'{token}'})
+                add_data(Job, job_id, {'log': req.text})
+                g.session.commit()
 
 
 def upsert(type, data):
