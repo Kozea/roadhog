@@ -23,6 +23,7 @@ setup(
     install_requires=[
         'alembic',
         'flask',
+        'python-dateutil',
         'requests',
         'sqlalchemy',
         'unrest',

@@ -3,6 +3,7 @@ import hmac
 from hashlib import sha1
 from urllib.parse import unquote, urlencode
 
+import dateutil.parser
 import requests
 from flask import Flask, g, redirect, request
 from sassutils.wsgi import SassMiddleware
@@ -121,9 +122,7 @@ def build_commit_from_pipeline(content):
 
 
 def format_timestamp(timestamp):
-    date = timestamp[:22] + timestamp[23:]
-    date = datetime.datetime.strptime(date, "%Y-%m-%dT%H:%M:%S%z")
-    return date.astimezone(tz=datetime.timezone.utc)
+    return dateutil.parser.parse(timestamp)
 
 
 def build_commit_from_push(content, **kwargs):
